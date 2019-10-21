@@ -11,7 +11,7 @@ import (
 
 var client = redis.NewClient(&redis.Options{
 	Addr:     "localhost:6379",
-	Password: "password",
+	Password: "",
 	DB:       0,
 })
 
@@ -31,9 +31,9 @@ func main() {
 	issueIdentity("vvl")
 	res1, _ := client.Get("vvl").Result()
 	fmt.Println(res1)
-	// var c Certificate
-	// unmarshalled := json.Unmarshal([]byte(res1), c)
-	// fmt.Println(unmarshalled)
+	var c Certificate
+	_ = json.Unmarshal([]byte(res1), &c)
+	fmt.Println(c.ILPAddress)
 }
 
 
