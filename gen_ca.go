@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-func notmain() {
+func main() {
 	newpath := filepath.Join(".", "ca_credentials")
 	os.MkdirAll(newpath, 0700)
 
@@ -56,4 +56,3 @@ func notmain() {
 	keyOut.Close()
 	log.Print("written key.pem\n")
 }
-
