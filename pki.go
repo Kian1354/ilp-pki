@@ -1,11 +1,13 @@
 package main
 
 import (
-	"fmt"
+	"crypto"
 	"crypto/rand"
 	"crypto/rsa"
-	"time"
 	"encoding/json"
+	"fmt"
+	"time"
+
 	"github.com/go-redis/redis"
 )
 
@@ -16,16 +18,15 @@ var client = redis.NewClient(&redis.Options{
 })
 
 func main() {
-	fmt.Println("hi there!")
-
 	pong, err := client.Ping().Result()
+	fmt.Print("Doing health check for redis client: ")
 	fmt.Println(pong, err)
 
 	err = client.Set("name", "Kian", 0).Err()
 	res, err := client.Get("name").Result()
 
 	fmt.Println(res)
-	fmt.Println(time.Now().AddDate(1,0,0))
+	fmt.Println(time.Now().AddDate(1, 0, 0))
 	// time.Now() = 2019-10-20 22:59:55.644117 -0700 PDT m=+1.734839423
 
 	issueIdentity("vvl")
@@ -36,38 +37,35 @@ func main() {
 	fmt.Println(c.ILPAddress)
 }
 
-
 type Certificate struct {
-	PublicKey rsa.PublicKey
+	PublicKey  crypto.PublicKey
 	ILPAddress string
 	Expiration time.Time
 }
 
-func newCertificate(pub rsa.PublicKey, ILPAddress string) Certificate {
-	expiration := time.Now().AddDate(1,0,0)
+func newCertificate(pub crypto.PublicKey, ILPAddress string) Certificate {
+	expiration := time.Now().AddDate(1, 0, 0)
 
 	c := Certificate{pub, ILPAddress, expiration}
 
-	// bytes, err := json.Marshal(c)
-	// fmt.Println(bytes)
-	// client.set(ILPAddress, )
 	return c
 }
 
-func issueIdentity(ILPAddress string) bool {
+func issueIdentity(ILPAddress string) rsa.PrivateKey {
 
+	// generate a 2048 bit RSA key
 	priv, _ := rsa.GenerateKey(rand.Reader, 2048)
-	pub := &priv.PublicKey
 
-	// fmt.Println(*pub)
-	c := newCertificate(*pub, ILPAddress)
+	// gets the public key portion as a crypto.PublicKey object
+	// and create a certificate
+	pub := priv.Public()
+	c := newCertificate(pub, ILPAddress)
 
+	// marshal the certificate and store
 	bytes, _ := json.Marshal(c)
-	// fmt.Println(bytes)
-
 	client.Set(ILPAddress, bytes, 0)
 
-	return true
+	return *priv
 }
 
 func reissueIdentity() bool {
@@ -79,6 +77,6 @@ func revokeIdentity() bool {
 }
 
 // should return a certificate
-func retrieveIdentity(ilpAddress string) bool {
+func retrieveIdentity(ilpAddress string) Certificate {
 	return false
 }

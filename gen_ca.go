@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-func main() {
+func amain() {
 	newpath := filepath.Join(".", "ca_credentials")
 	os.MkdirAll(newpath, 0700)
 
