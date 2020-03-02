@@ -29,7 +29,7 @@ var client = redis.NewClient(&redis.Options{
 	DB:       0,
 })
 
-func main() {
+func testFunctionality() {
 	pong, _ := client.Ping().Result()
 	fmt.Println("Doing health check for redis client: ", pong)
 
@@ -86,6 +86,9 @@ func IssueIdentity(ILPAddress string) (*rsa.PrivateKey, error) {
 
 	expiration := c.Expiration
 	duration := time.Until(expiration)
+
+	fmt.Println("On line 90", ILPAddress)
+
 	client.Set(ILPAddress, bytes, duration)
 
 	// return the private key
@@ -186,6 +189,20 @@ func verifySignature(cert Certificate, signature []byte) bool {
 
 	return err == nil
 }
+
+// // Returns true if signature successfully verified
+// func verifyJSONCertificate(certFile []byte, signature []byte) bool {
+// 	certificate := SignedCertificate{}
+// 	err := json.Unmarshal([]byte(certFile), &certificate)
+
+// 	if err != nil {
+// 		fmt.Println(err)
+// 		return false
+// 	}
+// 	isValid := IsValidCertificate(certificate)
+
+// 	return isValid
+// }
 
 // Server method for retrieving the CA private key from file.
 func getCAKey() (*rsa.PrivateKey, error) {
