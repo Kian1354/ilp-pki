@@ -29,7 +29,8 @@ var client = redis.NewClient(&redis.Options{
 	DB:       0,
 })
 
-func testFunctionality() {
+// TestFunctionality is a dummy method that shows how to interact with the different methods in pki.go
+func TestFunctionality() {
 	pong, _ := client.Ping().Result()
 	fmt.Println("Doing health check for redis client: ", pong)
 
@@ -57,6 +58,7 @@ func testFunctionality() {
 	fmt.Println("Certificate is valid: ", valid)
 }
 
+// SignedCertificate stores a certificate and its signature.
 type SignedCertificate struct {
 	Cert      Certificate
 	Signature []byte
@@ -69,7 +71,7 @@ type Certificate struct {
 	Expiration time.Time
 }
 
-// Given a ILP address, generate and store a new certificate; return the private key.
+// IssueIdentity generates and stores a new certificate given a new ILP address; returns the private key. Given a ILP address, generate and store a new certificate; return the private key.
 func IssueIdentity(ILPAddress string) (*rsa.PrivateKey, error) {
 	// generate a 2048 bit RSA key
 	priv, _ := rsa.GenerateKey(rand.Reader, 2048)
@@ -87,15 +89,13 @@ func IssueIdentity(ILPAddress string) (*rsa.PrivateKey, error) {
 	expiration := c.Expiration
 	duration := time.Until(expiration)
 
-	fmt.Println("On line 90", ILPAddress)
-
 	client.Set(ILPAddress, bytes, duration)
 
 	// return the private key
 	return priv, nil
 }
 
-//RetrieveIdentity: given an ILP address, retrieve the certificate from the client.
+// RetrieveIdentity retrieves a certificate for a given ILP address.
 func RetrieveIdentity(ilpAddress string) (SignedCertificate, error) {
 
 	cert := &SignedCertificate{}
@@ -118,12 +118,12 @@ func revokeIdentity(ilpAddress string) error {
 	return client.Del(ilpAddress).Err()
 }
 
-// Given a certificate, check if it is valid; certificate is defined to be valid if signature is valid and certificate is not expired
+// IsValidCertificate checks if a given certificate is valid is valid; certificate is defined to be valid if signature is valid and certificate is not expired.
 func IsValidCertificate(signedC SignedCertificate) bool {
 	return signedC.Cert.Expiration.After(time.Now()) && verifySignature(signedC.Cert, signedC.Signature)
 }
 
-// Saves a given certificate to a file.
+// SaveCertificateToFile saves a given certificate to a file.
 func SaveCertificateToFile(certificate SignedCertificate) (fileName string, err error) {
 	jsonData, err := json.Marshal(certificate)
 
