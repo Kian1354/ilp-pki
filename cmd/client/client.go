@@ -17,9 +17,7 @@ import (
 	"time"
 )
 
-const trustedCertURL = "https://raw.githubusercontent.com/Kian1354/ilp-pki/master/cmd/gen_ca/ca_credentials/ca.crt"
-
-const trustedCertKeyURL = "https://raw.githubusercontent.com/Kian1354/ilp-pki/master/cmd/gen_ca/ca_credentials/ca.key"
+const trustedCertURL = "https://gist.githubusercontent.com/saharshagrawal/e39fd807dececdac087b564caf822fab/raw/cc53caf43f33a391e0f1b76c51d17520f3baa10c/ca.crt"
 
 const PATH = "./root_ca_cert/ca.crt"
 
@@ -208,7 +206,6 @@ func Bootstrap() {
 		os.Mkdir(path, 0700)
 	}
 	downloadFile(trustedCertURL, "./root_ca_cert/ca.crt")
-	downloadFile(trustedCertKeyURL, "./root_ca_cert/ca.key")
 }
 
 func main() {
