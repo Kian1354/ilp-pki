@@ -17,7 +17,7 @@ import (
 	"time"
 )
 
-const trustedCertURL = "https://gist.githubusercontent.com/saharshagrawal/e39fd807dececdac087b564caf822fab/raw/cc53caf43f33a391e0f1b76c51d17520f3baa10c/ca.crt"
+const trustedCertURL = "https://gist.githubusercontent.com/saharshagrawal/f1edbcafa307e5c9aec535ce1702f4b7/raw/4b03147c42d856dc50b6623e529c653f95712be3/ca.crt"
 
 const PATH = "./root_ca_cert/ca.crt"
 
@@ -53,12 +53,16 @@ func createIdentity(ilpAddress string, url string) *rsa.PrivateKey {
 	req, _ := http.NewRequest("POST", url, payload)
 	req.Header.Add("Content-Type", "application/json")
 
-	res, _ := http.DefaultClient.Do(req)
+	res, err := http.DefaultClient.Do(req)
+
+	if err != nil {
+		fmt.Printf("Response error")
+	}
 	defer res.Body.Close()
 	body, _ := ioutil.ReadAll(res.Body)
 
 	responseObject := &createIdentityResponse{}
-	err := json.Unmarshal(body, responseObject)
+	err = json.Unmarshal(body, responseObject)
 
 	if err != nil {
 		fmt.Printf("Response error")
@@ -209,8 +213,8 @@ func Bootstrap() {
 }
 
 func main() {
-	Bootstrap()
-	createIdentity("kian", "http://localhost:8080")
+	// Bootstrap()
+	// createIdentity("kian", "http://localhost:8080")
 	res := retrieveIdentity("kian", "http://localhost:8080")
 
 	fmt.Println(verifySignature(res))
