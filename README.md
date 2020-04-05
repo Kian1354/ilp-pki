@@ -1,17 +1,17 @@
 # ilp-pki
 
 Set up Redis 
-`docker pull redis`  
-`docker run --name redis-test-instance -p 6379:6379 -d redis`
+- `docker pull redis`  
+- `docker run --name redis-test-instance -p 6379:6379 -d redis`
 
 Get go-redis package
-`go get github.com/go-redis/redis`
+- `go get github.com/go-redis/redis`
 
 ## Setup
 
 ### To set up a server
-Run `go run cmd/main/gen_ca/gen_ca.go` to generate the CA keys. This will generate a folder called `/ca_credentials/` inside of the `/main/gen_ca/` directory. 
-Now, publish the `/ca_credentials/ca.crt` for any client to receive the public key with the filename `ca.crt` (for instance as a github gist). 
+- Run `go run cmd/main/gen_ca/gen_ca.go` to generate the CA keys. This will generate a folder called `/ca_credentials/` inside of the `/main/gen_ca/` directory. 
+- Now, publish the `/ca_credentials/ca.crt` for any client to receive the public key with the filename `ca.crt` (for instance as a github gist). 
 
 ### To run the server
 - Run `go build .` in the `./cmd/main` to build the code.
